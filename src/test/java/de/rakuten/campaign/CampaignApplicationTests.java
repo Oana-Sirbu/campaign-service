@@ -1,15 +1,11 @@
-package com.rakuten.campaign;
+package de.rakuten.campaign;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CampaignApplicationTests
-{
+class CampaignApplicationTests {
 
-    @Test
-    void contextLoads()
-    {
-    }
-
+  @Test
+  void contextLoads() {}
 }
