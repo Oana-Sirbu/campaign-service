@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static de.rakuten.campaign.commons.TestUtils.getCampaignDTOList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,6 +28,15 @@ public class CampaignControllerTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
     controller = new CampaignController(service);
+  }
+
+  @Test
+  public void getActiveCampaign_validDate_responseStatusOk() {
+    when(service.getActiveCampaigns(any())).thenReturn(getCampaignDTOList());
+
+    ResponseEntity<List<CampaignDTO>> response = controller.getActiveCampaign("2019-12-26");
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
   }
 
   @Test
