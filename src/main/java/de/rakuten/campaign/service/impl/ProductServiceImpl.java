@@ -12,7 +12,7 @@ public class ProductServiceImpl
   private final ProductRepository productRepository;
   private final ProductMapper productMapper;
 
-  protected ProductServiceImpl(ProductRepository repository, ProductMapper mapper) {
+  public ProductServiceImpl(ProductRepository repository, ProductMapper mapper) {
     super(repository, mapper);
     this.productRepository = repository;
     this.productMapper = mapper;

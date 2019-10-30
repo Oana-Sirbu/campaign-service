@@ -17,7 +17,7 @@ public class CampaignServiceImpl
   private final CampaignRepository campaignRepository;
   private final CampaignMapper campaignMapper;
 
-  protected CampaignServiceImpl(CampaignRepository repository, CampaignMapper mapper) {
+  public CampaignServiceImpl(CampaignRepository repository, CampaignMapper mapper) {
     super(repository, mapper);
     this.campaignRepository = repository;
     this.campaignMapper = mapper;

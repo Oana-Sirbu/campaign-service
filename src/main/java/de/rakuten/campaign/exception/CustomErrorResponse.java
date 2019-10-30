@@ -1,10 +1,7 @@
 package de.rakuten.campaign.exception;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +9,7 @@ import static de.rakuten.campaign.commons.Constants.CUSTOM_ERROR_DATE_FORMAT;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomErrorResponse {

@@ -9,8 +9,8 @@ import java.util.List;
 public interface CampaignRepository extends JpaRepository<Campaign, String> {
   @Query(
       value =
-          "SELECT * FROM Campaign WHERE to_date(start_date, 'yyyy-MM-dd') <= to_date('2019-09-26', 'yyyy-MM-dd')"
-              + "AND to_date(end_date, 'yyyy-MM-dd') >= to_date('2019-09-26', 'yyyy-MM-dd')",
+          "SELECT * FROM Campaign WHERE to_timestamp(start_date, 'YYYY-MM-DD HH24:MI:SS') <= to_timestamp(?1, 'YYYY-MM-DD HH24:MI:SS')"
+              + "AND to_timestamp(end_date, 'YYYY-MM-DD HH24:MI:SS') >= to_timestamp(?1, 'YYYY-MM-DD HH24:MI:SS')",
       nativeQuery = true)
   List<Campaign> getActiveCampaigns(String date);
 }
