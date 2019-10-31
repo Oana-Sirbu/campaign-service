@@ -10,8 +10,7 @@ public class TestUtils {
   public static List<CampaignDTO> getCampaignDTOList() {
     List<ProductDTO> products = new ArrayList<>();
     products.add(
-        new ProductDTO()
-            .builder()
+        ProductDTO.builder()
             .id("0150e3ab-30b0-4ca5-affb-d8a33e70525c")
             .name("IPhone 8S")
             .price(299.5)
@@ -19,8 +18,7 @@ public class TestUtils {
 
     List<CampaignDTO> campaigns = new ArrayList<>();
     campaigns.add(
-        new CampaignDTO()
-            .builder()
+        CampaignDTO.builder()
             .id("945afe2b-2847-4a95-ad79-004462d2c76")
             .name("Cellphone special offers")
             .startDate("2019-12-26T00:00:00.000Z")
