@@ -2,6 +2,7 @@ package de.rakuten.campaign.controller;
 
 import de.rakuten.campaign.domain.CampaignDTO;
 import de.rakuten.campaign.service.impl.CampaignServiceImpl;
+import de.rakuten.campaign.service.impl.ProductServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,12 @@ import static de.rakuten.campaign.commons.Util.*;
 @RequestMapping("/campaignapi")
 public class CampaignController {
   private CampaignServiceImpl campaignService;
+  private ProductServiceImpl productService;
 
-  public CampaignController(CampaignServiceImpl campaignService) {
+  public CampaignController(
+      CampaignServiceImpl campaignService, ProductServiceImpl productService) {
     this.campaignService = campaignService;
+    this.productService = productService;
   }
 
   @GetMapping("/campaign/active/{date}")
@@ -44,6 +48,8 @@ public class CampaignController {
   ResponseEntity<CampaignDTO> createCampaign(@RequestBody @Valid CampaignDTO campaignDTO) {
     if (validateCampaign(campaignDTO))
       throw new ConstraintViolationException(BAD_INPUT_ERROR_MESSAGE, new HashSet<>());
+
+    campaignDTO.getProducts().forEach(product -> productService.findById(product.getId()));
 
     CampaignDTO result = campaignService.save(campaignDTO);
     return new ResponseEntity<>(result, HttpStatus.CREATED);
