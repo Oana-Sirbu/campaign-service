@@ -6,12 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
-import static de.rakuten.campaign.commons.Constants.BAD_INPUT_ERROR_MESSAGE;
-import static de.rakuten.campaign.commons.Constants.NOT_FOUND_ERROR_MESSAGE;
+import static de.rakuten.campaign.commons.Constants.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -36,5 +36,16 @@ public class CustomExceptionHandler {
 
     log.error(BAD_INPUT_ERROR_MESSAGE);
     return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(HttpClientErrorException.class)
+  public ResponseEntity<CustomErrorResponse> handle(HttpClientErrorException e) {
+    CustomErrorResponse error = new CustomErrorResponse();
+    error.setTimestamp(LocalDateTime.now());
+    error.setMessage(e.getMessage());
+    error.setStatus(HttpStatus.CONFLICT.value());
+
+    log.error(CAMPAIGN_EXIST_ERROR_MESSAGE);
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
 }

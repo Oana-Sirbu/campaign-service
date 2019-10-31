@@ -9,13 +9,15 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 
-import java.text.ParseException;
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static de.rakuten.campaign.commons.TestUtils.getCampaignDTOList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -40,19 +42,19 @@ public class CampaignControllerTest {
   }
 
   @Test
-  public void createCampaign_validCampaignDTO_responseStatusOK() throws ParseException {
+  public void createCampaign_validCampaignDTO_responseStatusCreated() {
     CampaignDTO campaign = getCampaignDTOList().get(0);
     when(service.save(any())).thenReturn(getCampaignDTOList().get(0));
     when(service.getActiveCampaigns(any())).thenReturn(new ArrayList<>());
 
     ResponseEntity<CampaignDTO> response = controller.createCampaign(campaign);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(HttpStatus.CREATED, response.getStatusCode());
     assertEquals(campaign.getName(), response.getBody().getName());
   }
 
   @Test
-  public void createCampaign_invalidDateCampaignDTO_responseStatusOK() throws ParseException {
+  public void createCampaign_invalidDateCampaignDTO_throwException() {
     CampaignDTO campaign = getCampaignDTOList().get(0);
     campaign.setStartDate("2019-09-26T00:00:00.000Z");
     campaign.setEndDate("2019-09-29T00:00:00.000Z");
@@ -60,25 +62,20 @@ public class CampaignControllerTest {
     when(service.save(any())).thenReturn(getCampaignDTOList().get(0));
     when(service.getActiveCampaigns(any())).thenReturn(new ArrayList<>());
 
-    ResponseEntity<CampaignDTO> response = controller.createCampaign(campaign);
-
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertThrows(ConstraintViolationException.class, () -> controller.createCampaign(campaign));
   }
 
   @Test
-  public void createCampaign_alreadyActiveCampaignDTO_responseStatusBadRequest()
-      throws ParseException {
+  public void createCampaign_alreadyActiveCampaignDTO_throwException() {
     CampaignDTO campaign = getCampaignDTOList().get(0);
     when(service.save(any())).thenReturn(campaign);
     when(service.getActiveCampaigns(any())).thenReturn(getCampaignDTOList());
 
-    ResponseEntity<CampaignDTO> response = controller.createCampaign(campaign);
-
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertThrows(HttpClientErrorException.class, () -> controller.createCampaign(campaign));
   }
 
   @Test
-  public void getCampaignById_campaignId_responseStatusOK() {
+  public void getCampaign_campaignId_responseStatusOK() {
     CampaignDTO campaign = getCampaignDTOList().get(0);
     when(service.findById(campaign.getId())).thenReturn(campaign);
 

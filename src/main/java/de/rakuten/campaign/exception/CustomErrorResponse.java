@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-import static de.rakuten.campaign.commons.Constants.CUSTOM_ERROR_DATE_FORMAT;
+import static de.rakuten.campaign.commons.Constants.DATE_TIME_FORMAT;
 
 @Getter
 @Setter
@@ -13,7 +13,7 @@ import static de.rakuten.campaign.commons.Constants.CUSTOM_ERROR_DATE_FORMAT;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomErrorResponse {
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = CUSTOM_ERROR_DATE_FORMAT)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_FORMAT)
   private LocalDateTime timestamp;
 
   private int status;

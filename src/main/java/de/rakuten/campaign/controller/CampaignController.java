@@ -2,20 +2,23 @@ package de.rakuten.campaign.controller;
 
 import de.rakuten.campaign.domain.CampaignDTO;
 import de.rakuten.campaign.service.impl.CampaignServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.text.ParseException;
+import java.util.HashSet;
 import java.util.List;
 
 import static de.rakuten.campaign.commons.Constants.*;
 import static de.rakuten.campaign.commons.Util.*;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/campaignapi")
@@ -38,12 +41,12 @@ public class CampaignController {
   }
 
   @PostMapping("/campaign/")
-  ResponseEntity<CampaignDTO> createCampaign(@RequestBody @Valid CampaignDTO campaignDTO)
-      throws ParseException {
-    if (validateCampaign(campaignDTO)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+  ResponseEntity<CampaignDTO> createCampaign(@RequestBody @Valid CampaignDTO campaignDTO) {
+    if (validateCampaign(campaignDTO))
+      throw new ConstraintViolationException(BAD_INPUT_ERROR_MESSAGE, new HashSet<>());
 
     CampaignDTO result = campaignService.save(campaignDTO);
-    return new ResponseEntity<>(result, HttpStatus.OK);
+    return new ResponseEntity<>(result, HttpStatus.CREATED);
   }
 
   @GetMapping("/campaign/{id}")
@@ -81,8 +84,9 @@ public class CampaignController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  private boolean validateCampaign(CampaignDTO campaignDTO) throws ParseException {
+  private boolean validateCampaign(CampaignDTO campaignDTO) {
     if (!validCampaignDateInterval(campaignDTO)) {
+      log.error("Invalid date interval");
       return true;
     }
 
@@ -91,9 +95,6 @@ public class CampaignController {
 
     List<CampaignDTO> activeCampaigns =
         campaignService.getActiveCampaigns(campaignDTO.getEndDate());
-    if (existProductInActiveCampaign(campaignDTO, activeCampaigns)) {
-      return true;
-    }
-    return false;
+    return existProductInActiveCampaign(campaignDTO, activeCampaigns);
   }
 }
