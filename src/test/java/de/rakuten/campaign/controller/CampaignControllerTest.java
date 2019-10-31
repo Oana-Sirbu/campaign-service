@@ -3,11 +3,11 @@ package de.rakuten.campaign.controller;
 import de.rakuten.campaign.domain.CampaignDTO;
 import de.rakuten.campaign.service.impl.CampaignServiceImpl;
 import de.rakuten.campaign.service.impl.ProductServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
@@ -22,17 +22,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class CampaignControllerTest {
   @InjectMocks private CampaignController controller;
-
   @Mock private CampaignServiceImpl campaignService;
   @Mock private ProductServiceImpl productService;
-
-  @BeforeEach
-  public void setup() {
-    MockitoAnnotations.initMocks(this);
-    controller = new CampaignController(campaignService, productService);
-  }
 
   @Test
   public void getActiveCampaign_validDate_responseStatusOk() {
@@ -61,16 +55,12 @@ public class CampaignControllerTest {
     campaign.setStartDate("2019-09-26T00:00:00.000Z");
     campaign.setEndDate("2019-09-29T00:00:00.000Z");
 
-    when(campaignService.save(any())).thenReturn(getCampaignDTOList().get(0));
-    when(campaignService.getActiveCampaigns(any())).thenReturn(new ArrayList<>());
-
     assertThrows(ConstraintViolationException.class, () -> controller.createCampaign(campaign));
   }
 
   @Test
   public void createCampaign_alreadyActiveCampaignDTO_throwException() {
     CampaignDTO campaign = getCampaignDTOList().get(0);
-    when(campaignService.save(any())).thenReturn(campaign);
     when(campaignService.getActiveCampaigns(any())).thenReturn(getCampaignDTOList());
 
     assertThrows(HttpClientErrorException.class, () -> controller.createCampaign(campaign));
