@@ -49,10 +49,12 @@ public class CampaignController {
     if (validateCampaign(campaignDTO))
       throw new ConstraintViolationException(BAD_INPUT_ERROR_MESSAGE, new HashSet<>());
 
-    campaignDTO.getProducts().forEach(product -> productService.findById(product.getId()));
-
     CampaignDTO result = campaignService.save(campaignDTO);
     return new ResponseEntity<>(result, HttpStatus.CREATED);
+  }
+
+  private void validateProducts(@RequestBody @Valid CampaignDTO campaignDTO) {
+    campaignDTO.getProducts().forEach(product -> productService.findById(product.getId()));
   }
 
   @GetMapping("/campaign/{id}")
@@ -74,6 +76,7 @@ public class CampaignController {
           @Pattern(regexp = UUID_REGEX_PATTERN, message = BAD_INPUT_ERROR_MESSAGE)
           String id,
       @RequestBody @Valid CampaignDTO campaignDTO) {
+    validateProducts(campaignDTO);
     campaignDTO.setId(id);
     CampaignDTO newCampaignDTO = campaignService.update(campaignDTO);
     return new ResponseEntity<>(newCampaignDTO, HttpStatus.OK);
@@ -91,6 +94,8 @@ public class CampaignController {
   }
 
   private boolean validateCampaign(CampaignDTO campaignDTO) {
+    validateProducts(campaignDTO);
+
     if (!validCampaignDateInterval(campaignDTO)) {
       log.error("Invalid date interval");
       return true;
